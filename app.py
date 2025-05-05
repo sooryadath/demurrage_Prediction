@@ -80,12 +80,15 @@ if st.button("🔍 Predict & Suggest"):
     with st.spinner("Analyzing..."):
         result = generate_demurrage_counterfactual(input_data, df, model)
 
-    st.subheader("🔎 Results")
-    if result is not None:
-     result = pd.DataFrame(result).reset_index(drop=True)
-    print(result)
-    if result is None or (isinstance(result, pd.DataFrame) and result.empty):
-      st.warning("No counterfactual could be generated for these inputs. Try changing the values or allow more features to vary.")
+st.subheader("🔎 Results")
+print(result)  # for backend logs
+
+if result is not None:
+    result = pd.DataFrame(result).reset_index(drop=True)
+    if result.empty:
+        st.warning("No counterfactual could be generated for these inputs. Try changing the values or allow more features to vary.")
     else:
-      st.write(result)
+        st.dataframe(result)
+else:
+    st.error("Something went wrong. Please try again.")
 
