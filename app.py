@@ -13,7 +13,7 @@ from counterfactual import generate_demurrage_counterfactual
 
 # Load model and data
 model = joblib.load('model.pkl')
-df = pd.read_csv('cleaned_data.csv')
+df = pd.read_excel('cleaned_data.xlsx')
 
 # Page setup
 st.set_page_config(page_title="Demurrage Prediction Tool", layout="centered")
