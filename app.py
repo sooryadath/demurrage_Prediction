@@ -79,8 +79,7 @@ if st.button("🔍 Predict & Suggest"):
 
     with st.spinner("Analyzing..."):
         result = generate_demurrage_counterfactual(input_data, df, model)
-        print(result)
 
     st.subheader("🔎 Results")
-    st.write(result)
+    st.dataframe(result)
 
