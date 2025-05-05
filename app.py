@@ -87,5 +87,5 @@ if st.button("🔍 Predict & Suggest"):
     if result is None or (isinstance(result, pd.DataFrame) and result.empty):
       st.warning("No counterfactual could be generated for these inputs. Try changing the values or allow more features to vary.")
     else:
-      st.dataframe(result)
+      st.write(result)
 
