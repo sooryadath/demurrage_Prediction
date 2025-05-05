@@ -22,10 +22,10 @@ st.title("⛵ Demurrage Prediction and Suggestions")
 # Input form
 st.subheader("📥 Enter Shipping Details")
 
-quantity = st.number_input("Quantity (MT)", min_value=0, value=5000)
+quantity = st.number_input("Quantity (MT)")
 free_time = st.selectbox("Free Time (Hours)", [6, 24, 27])
-discharge_rate = st.number_input("Discharge Rate (MT/hr)", min_value=0, value=400)
-demurrage_rate = st.number_input("Demurrage Rate Per Day (USD)", min_value=0, value=42500)
+discharge_rate = st.number_input("Discharge Rate (MT/hr)")
+demurrage_rate = st.number_input("Demurrage Rate Per Day (USD)")
 
 if st.button("🔍 Predict & Suggest"):
     input_data = {
