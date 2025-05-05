@@ -1,35 +1,33 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import dice_ml
 from dice_ml import Dice
+import dice_ml
 
-# --------------------
+# ------------------------
+# Page Configuration
+# ------------------------
+st.set_page_config(page_title="Demurrage Prediction Tool", layout="centered")
+
+# ------------------------
 # Load model and data
-# --------------------
-try:
-    model = joblib.load('model.pkl')
-    df = pd.read_excel('cleaned_data.xlsx')
-except Exception as e:
-    st.error(f"❌ Failed to load model or data: {e}")
-    st.stop()
+# ------------------------
+@st.cache_data
+def load_model():
+    model = joblib.load("model.pkl")
+    return model
+
+@st.cache_data
+def load_data():
+    df = pd.read_csv("data.csv")
+    return df
+
+model = load_model()
+df = load_data()
 
 # ------------------------
-# Streamlit App Interface
+# Counterfactual Generator
 # ------------------------
-st.set_page_config(page_title="Demurrage Prediction Tool", layout="centered", initial_sidebar_state="auto")
-
-st.title("⛵ Demurrage Prediction and Suggestions")
-st.subheader("📥 Enter Shipping Details")
-
-quantity = st.number_input("Quantity (MT)", min_value=0.0)
-free_time = st.selectbox("Free Time (Hours)", [6, 24, 27])
-discharge_rate = st.number_input("Discharge Rate (MT/hr)", min_value=0.0)
-demurrage_rate = st.number_input("Demurrage Rate Per Day (USD)", min_value=0.0)
-
-# -----------------------------
-# Define Counterfactual Logic
-# -----------------------------
 def generate_demurrage_counterfactual(input_dict, df, model):
     try:
         feature_cols = ['Quantity', 'Free_Time_Hours', 'Discharge_Rate', 'Demurrage_Rate_Per_day']
@@ -43,9 +41,6 @@ def generate_demurrage_counterfactual(input_dict, df, model):
         query_instance = pd.DataFrame([input_dict])
         pred = model.predict(query_instance)[0]
 
-        print("Prediction:", pred)
-        print("Query Instance:\n", query_instance)
-
         if pred == 1:
             dice_exp = exp.generate_counterfactuals(
                 query_instance,
@@ -53,33 +48,48 @@ def generate_demurrage_counterfactual(input_dict, df, model):
                 desired_class=0,
                 features_to_vary=['Quantity', 'Discharge_Rate']
             )
-            return dice_exp.visualize_as_dataframe()
+            result_df = dice_exp.visualize_as_dataframe()
+
+            if result_df is None or result_df.empty:
+                return pd.DataFrame({'Message': ['⚠️ No valid counterfactuals could be generated.']})
+            return result_df
+
         else:
-            return pd.DataFrame({'Message': ['No demurrage predicted. No counterfactual needed.']})
+            return pd.DataFrame({'Message': ['✅ No demurrage predicted. Counterfactual not required.']})
+
     except Exception as e:
-        return pd.DataFrame({'Error': [f"❌ Unexpected error occurred. Check the input format or model.\nDetails: {e}"]})
+        return pd.DataFrame({'Error': [f"❌ Error: {str(e)}"]})
 
 # ------------------------
-# Button: Predict & Show
+# Streamlit App Interface
 # ------------------------
-if st.button("🔍 Predict & Suggest"):
+st.title("⛵ Demurrage Prediction and Suggestions")
+st.subheader("📥 Enter Shipping Details")
+
+# User input
+quantity = st.number_input("Cargo Quantity (in tons)", min_value=100.0, value=5000.0)
+free_time = st.number_input("Free Time (in hours)", min_value=0.0, value=6.0)
+discharge_rate = st.number_input("Discharge Rate (tons/hour)", min_value=50.0, value=400.0)
+demurrage_rate = st.number_input("Demurrage Rate (per day)", min_value=1000.0, value=24500.0)
+
+if st.button("Predict & Suggest Improvements"):
     input_data = {
-        'Quantity': quantity,
-        'Free_Time_Hours': free_time,
-        'Discharge_Rate': discharge_rate,
-        'Demurrage_Rate_Per_day': demurrage_rate
+        "Quantity": quantity,
+        "Free_Time_Hours": free_time,
+        "Discharge_Rate": discharge_rate,
+        "Demurrage_Rate_Per_day": demurrage_rate
     }
-
-    st.write("🧾 Input Summary", input_data)
 
     with st.spinner("Analyzing..."):
         result = generate_demurrage_counterfactual(input_data, df, model)
+        st.subheader("🔎 Results")
 
-    st.subheader("🔎 Results")
-
-    if isinstance(result, pd.DataFrame) and 'Error' in result.columns:
-        st.error(result['Error'].iloc[0])
-    elif result.empty:
-        st.warning("⚠️ No counterfactual could be generated for these inputs.")
-    else:
-        st.dataframe(result)
+        if not isinstance(result, pd.DataFrame):
+            st.error("❌ Unexpected output format.")
+        elif 'Error' in result.columns:
+            st.error(result['Error'].iloc[0])
+        elif 'Message' in result.columns:
+            st.info(result['Message'].iloc[0])
+        else:
+            st.success("✅ Counterfactual generated successfully!")
+            st.dataframe(result)
