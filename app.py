@@ -16,6 +16,12 @@ from dice_ml import Dice
 
 def generate_demurrage_counterfactual(input_dict, df, model):
     # Define relevant features
+    print("Input dict:", input_dict)
+    # ... rest of your code ...
+    print("Prediction:", pred)
+    # ... after generating result ...
+    print("Result to return:", result)
+    return result
     feature_cols = [
         'Quantity', 'Free_Time_Hours', 'Discharge_Rate',
         'Demurrage_Rate_Per_day'
@@ -79,6 +85,7 @@ if st.button("🔍 Predict & Suggest"):
 
     with st.spinner("Analyzing..."):
         result = generate_demurrage_counterfactual(input_data, df, model)
+        print(result)
 
     st.subheader("🔎 Results")
     st.write(result)
