@@ -6,3 +6,4 @@ streamlit
 imbalanced-learn
 scikit-learn
 openpyxl
+IPython
