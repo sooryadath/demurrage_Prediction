@@ -11,6 +11,14 @@ import pandas as pd
 import joblib
 from counterfactual import generate_demurrage_counterfactual
 
+try:
+    model = joblib.load('model.pkl')
+    df = pd.read_excel('cleaned_data.xlsx')
+except Exception as e:
+    st.error(f"Failed to load model or data: {e}")
+    st.stop()
+
+
 # Load model and data
 model = joblib.load('model.pkl')
 df = pd.read_excel('cleaned_data.xlsx')
