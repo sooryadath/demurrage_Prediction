@@ -19,7 +19,7 @@ def load_model():
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data.csv")
+    df = pd.read_excel('cleaned_data.xlsx')
     return df
 
 model = load_model()
