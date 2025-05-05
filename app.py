@@ -81,6 +81,7 @@ if st.button("🔍 Predict & Suggest"):
         result = generate_demurrage_counterfactual(input_data, df, model)
 
     st.subheader("🔎 Results")
+    print(result)
     if result is None or (isinstance(result, pd.DataFrame) and result.empty):
       st.warning("No counterfactual could be generated for these inputs. Try changing the values or allow more features to vary.")
     else:
