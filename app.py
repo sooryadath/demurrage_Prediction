@@ -5,7 +5,7 @@ import pandas as pd
 import joblib
 import dice_ml
 from dice_ml import Dice
-
+st.set_page_config(page_title="Demurrage Prediction Tool", layout="centered")
 # ------------------------
 # Load model and data
 # ------------------------
@@ -60,7 +60,7 @@ def generate_demurrage_counterfactual(input_dict, df, model):
 # ------------------------
 # Streamlit App Interface
 # ------------------------
-st.set_page_config(page_title="Demurrage Prediction Tool", layout="centered")
+
 st.title("⛵ Demurrage Prediction and Suggestions")
 
 st.subheader("📥 Enter Shipping Details")
