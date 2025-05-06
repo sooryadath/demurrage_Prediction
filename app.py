@@ -53,6 +53,5 @@ input_data = {
 
 # Button to trigger prediction
 if st.button('Find Discharge Rate Threshold'):
-    threshold = find_discharge_rate_threshold(input_data, model)
-    if threshold is not None:
-        st.write(f"Discharge Rate threshold to avoid demurrage: {threshold}")
+    find_discharge_rate_threshold(input_data, model)
+    
