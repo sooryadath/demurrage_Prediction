@@ -11,7 +11,14 @@ def find_discharge_rate_threshold(input_dict, model, min_rate=100, step=-1):
 
     base_input = copy.deepcopy(input_dict)
     current_rate = base_input['Discharge_Rate']
-
+    
+    
+    # Check if the input data itself already results in no demurrage (i.e., prediction is 0)
+    test_df = pd.DataFrame([base_input])
+    initial_pred = model.predict(test_df)[0]
+    if initial_pred == 0:
+        st.success("✅ No demurrage case: The current discharge rate already avoids demurrage.")
+        return current_rate
     if current_rate < min_rate:
         st.error("❌ Starting rate is already lower than min_rate. No need to find threshold.")
         return None
