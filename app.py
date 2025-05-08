@@ -65,6 +65,6 @@ input_data = {
 # Trigger threshold finding
 if st.button('🔍 Find Threshold'):
     rate, q = find_discharge_rate_threshold(input_data, model)
-    if rate and q:
-        st.info(f"🧾 Use Discharge Rate: {rate}, Quantity: {q} to avoid demurrage.")
+    #if rate and q:
+        #st.info(f"🧾 Use Discharge Rate: {rate}, Quantity: {q} to avoid demurrage.")
 
